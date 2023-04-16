@@ -1,0 +1,88 @@
+const express = require("express");
+const app = express();
+require("dotenv").config();
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+const morgan = require("morgan");
+app.use(morgan("dev"));
+app.use(express.json());
+//cors con sus dos endpoint de generar orden de pago y confirmación de pago
+const cors = require("cors");
+app.use(cors());
+
+//methodo cors1 separado
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "http://localhost:3000",
+    "http://localhost:3001/payment"
+  );
+  res.header("Access-Control-Allow-Credentials", true);
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin",
+    "X-Requested-Width",
+    "Content-Type"
+  );
+  res.header("Access-Control-Allow-Methods", "POST");
+
+  next();
+});
+
+// SDK de Mercado Pago
+const mercadopago = require("mercadopago");
+// Agrega credenciales
+mercadopago.configure({
+  access_token: process.env.PROD_ACCESS_TOKEN,
+});
+
+app.get("/", (req, res) => {
+  res.send("Hello Worldsito");
+});
+
+app.use("/payment", (req, res) => {
+  const prod = req.body;
+  let preference = {
+    items: [
+      {
+        kid: 1,
+        title: prod.title,
+        currency_id: "USD",
+        picture_url: prod.img,
+        description: prod.description,
+        category_id: "men",
+        unit_price: prod.price,
+        quantity: 1,
+      },
+    ],
+
+    back_urls: {
+      success: "http://localhost:3000",
+      failure: "",
+      pending: "",
+    },
+    auto_return: "approved",
+    binary_mode: true,
+  };
+
+  mercadopago.preferences
+    .create(preference)
+    .then((response) => res.status(200).send({ response }))
+    .catch((error) => res.status(400).send({ error: error.message }));
+});
+
+//server
+const port = process.env.PORT;
+app.listen(port, () => {
+  console.log(`Server is running PUTIN on Port ${port}`);
+});
+
+
+///stackOverFlow
+app.use((req,res, next)=>{
+    res.setHeader('Access-Control-Allow-Origin',"http://localhost:3000");
+    res.setHeader('Access-Control-Allow-Headers',"*");
+    res.header('Access-Control-Allow-Credentials', true);
+    next();
+});

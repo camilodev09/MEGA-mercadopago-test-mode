@@ -1,0 +1,59 @@
+           <button
+              onClick={() => {
+                axios
+                  .post("http://localhost:3001/payment", item)
+                  .then(
+                    (res) =>
+                      (window.location.href = res.data.response.body.init_point)
+                  );
+              }}
+              className="text-base bg-black text-white w-full py-3 mt-6 hover:bg-gray-800 duration-300"
+            >
+              proceed to checkout
+            </button>
+
+            //other way
+
+            async function sendData(e) {
+        e.preventDefault();
+        const config = {
+            url: 'https://cors-anywhere.herokuapp.com/http://PRUEBA.org/',
+            method: 'POST',
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'origin':'x-requested-with',
+                'Access-Control-Allow-Headers': 'POST, GET, PUT, DELETE, OPTIONS, HEAD, Authorization, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Access-Control-Allow-Origin',
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify({email: email, password: password}),
+        };
+        const response = await axios(config).catch((err) => err);
+        if(response.data.error){
+            alert(response.data.error);
+        } else {
+            localStorage.setItem('token', response.token);
+            setIsAuthorized(true);
+        }
+    }
+
+    CAMILO SELLER  
+     NGROKPRODUCTS
+
+     Credencial de prod 
+     TOKEN= APP_USR-1596876818894298-032909-734e25fb3908dcd6eef2f88c4db34e13-1341097551
+     KEY =APP_USR-18d78ef5-c4ee-4982-ad9c-7090bfa620ba
+
+     Credencial de prueba 
+     TOKEN = TEST-1596876818894298-032909-bc583c12e51aadcf18f914608adf007b-1341097551
+     KEY = TEST-7b529771-ae32-4e81-bf34-e18665c73959
+
+     USER = TEST_USER_1134894081    PASS: 2Xp8uoA34X
+
+    Bau_Comprador
+    TEST_USER_1753781630    PASS: eFhWROOFMI
+
+    OTHER ACCOUNT SELLER ARG
+    TESTVJ28BOF4
+    qatest3457
+
+    OTHER ACCOUNT SELLER PER
