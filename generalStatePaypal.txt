@@ -1,0 +1,28 @@
+const items = productData.map((item) => {
+  return {
+    name: item.name,
+    quantity: item.quantity,
+    unit_amount: {
+      currency_code: "USD",
+      value: item.price.toFixed(2),
+    },
+     tax: {
+            currency_code: "USD",
+            value: item.tax,
+          },
+  };
+});
+
+const createOrder = (data, actions) => {
+  return actions.order.create({
+    purchase_units: [
+      {
+        amount: {
+          currency_code: "USD",
+          value: totalAmt,
+        },
+        items: items,
+      },
+    ],
+  });
+};

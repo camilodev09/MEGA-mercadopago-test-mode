@@ -10,7 +10,6 @@ import {
 } from "../redux/TamboSlice";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import { Link } from "react-router-dom";
-import axios from "axios";
 
 const Cartproducts = () => {
   const dispatch = useDispatch();

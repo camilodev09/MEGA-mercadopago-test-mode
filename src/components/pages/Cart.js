@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import Cartproducts from "../CartProducts";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const Cart = () => {
   const productData = useSelector((state) => state.tambo.productData);
@@ -18,6 +19,55 @@ const Cart = () => {
     });
     setTotalAmt(price.toFixed(2));
   }, [productData]);
+
+  /* HANDLECHECKOUT */
+
+  /* HANDLECHECKOUT */
+  const handleCheckout = () => {
+    if (userInfo) {
+      setPayNow(true);
+    } else {
+      toast.error("Please sign in to Checkout");
+    }
+  };
+  /* CHECKOUT paypal LOGIC linked setAmount */
+  const items = productData.map((item) => {
+    return {
+      name: item.title,
+      quantity: item.quantity,
+      description: item.description,
+      value: item.price.toFixed(2),
+    };
+  });
+
+  /* CREATE ORDER paypal LOGIC linked setAmount */
+  const createOrder = (data, actions) => {
+    console.log(items); // Agregar esta línea
+    return actions.order.create({
+      purchase_units: [
+        {
+          amount: {
+            currency_code: "USD",
+            value: totalAmt,
+          },
+          item: items,
+        },
+      ],
+    });
+  };
+  /* ONAPROVE paypal LOGIC linked setAmount */
+  const onApprove = (data, actions) => {
+    return actions.order.capture().then(function (details) {
+      setPayNow(false);
+      toast.success("Payment Successful!");
+    });
+  };
+  /* ONAERROR paypal LOGIC linked setAmount */
+  // eslint-disable-next-line no-unused-vars
+  const onError = (err) => {
+    console.log(err);
+    toast.error("An error occurred while processing payment");
+  };
 
   return (
     <div>
@@ -44,9 +94,30 @@ const Cart = () => {
             <p className="font-titleFont font-semibold flex justify-between mt-6">
               Total <span className="text-xl font-bold">${totalAmt}</span>
             </p>
-
+            {/*PAY NOW BUTTON  HERE AGREE PAY PAL*/}
+            <button
+              onClick={handleCheckout}
+              className="text-base bg-black text-white w-full py-3 mt-6 hover:bg-gray-800 duration-300 rounded-md"
+            >
+              proceed to checkout
+            </button>
+            {/*PAY NOW BUTTON */}
+            {/*then WE VERIFY WITH STATE PAYNOW */}
             {payNow && (
-              <div className="w-full mt-6 flex items-center justify-center"></div>
+              <div className="w-full mt-6 flex items-center justify-center">
+                <PayPalScriptProvider
+                  options={{
+                    "client-id":
+                      "AU8HMmXo4qv0YcKxr2UTFAhWprICD_15NzA5ulRq776CeXLqmPLSfkN_oUXgfrOAFner3RsgWGghR7QT",
+                  }}
+                >
+                  <PayPalButtons
+                    createOrder={createOrder}
+                    onApprove={onApprove}
+                    onError={(error) => console.error(error)}
+                  />
+                </PayPalScriptProvider>
+              </div>
             )}
           </div>
         </div>
